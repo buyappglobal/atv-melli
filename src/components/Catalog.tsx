@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, ChevronRight } from 'lucide-react';
+import { ChevronRight, X, Gauge, ShieldCheck, Wrench } from 'lucide-react';
 
 const catalogData = {
   CFORCE: [
@@ -33,6 +33,7 @@ const catalogData = {
 
 export function Catalog() {
   const [activeCategory, setActiveCategory] = useState<keyof typeof catalogData>('CFORCE');
+  const [selectedModel, setSelectedModel] = useState<{name: string, image: string} | null>(null);
 
   return (
     <section className="py-24 relative overflow-hidden" id="modelos">
@@ -84,6 +85,7 @@ export function Catalog() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   key={model.name} 
+                  onClick={() => setSelectedModel(model)}
                   className="glass flex flex-col items-center justify-between p-6 rounded-xl hover:border-brand-orange/50 transition-colors group cursor-pointer"
                 >
                   <div className="h-40 w-full flex items-center justify-center mb-6">
@@ -110,6 +112,91 @@ export function Catalog() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Internal Ficha Modal */}
+      <AnimatePresence>
+        {selectedModel && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" style={{ pointerEvents: 'auto' }}>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedModel(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-4xl max-h-[90vh] glass bg-[#090909]/95 overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col md:flex-row z-10"
+            >
+              <button 
+                onClick={() => setSelectedModel(null)}
+                className="absolute top-4 right-4 z-20 p-2 glass rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X size={20} className="text-white" />
+              </button>
+
+              <div className="w-full md:w-1/2 p-10 flex items-center justify-center bg-white/5 relative">
+                <div className="absolute inset-0 bg-brand-orange/10 mix-blend-overlay"></div>
+                <img 
+                  src={selectedModel.image} 
+                  alt={selectedModel.name}
+                  className="w-full max-h-[30vh] md:max-h-[50vh] object-contain drop-shadow-2xl relative z-10"
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                     e.currentTarget.src = 'https://images.unsplash.com/photo-1594951473187-5735cf57662c?q=80&w=600&auto=format&fit=crop';
+                  }}
+                />
+              </div>
+
+              <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto no-scrollbar">
+                <span className="tech-label text-brand-orange mb-2 block">{activeCategory} Series</span>
+                <h3 className="text-3xl md:text-4xl font-extrabold uppercase tracking-[-0.04em] text-white mb-6">
+                  {selectedModel.name}
+                </h3>
+                
+                <p className="text-gray-400 font-light mb-8 leading-relaxed">
+                  Especificaciones preliminares sujetas a la homologación europea. El rendimiento bruto de la familia {activeCategory} diseñado para conquistar todos los terrenos con precisión milimétrica.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                   <div className="glass p-4 rounded-lg bg-white/5">
+                     <Gauge className="text-brand-orange mb-2" size={20} />
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Motor Pura Sangre</div>
+                     <div className="text-white text-sm font-medium">Inyección BOSH</div>
+                   </div>
+                   <div className="glass p-4 rounded-lg bg-white/5">
+                     <ShieldCheck className="text-brand-orange mb-2" size={20} />
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Garantía OffRoad</div>
+                     <div className="text-white text-sm font-medium">Cobertura Oficial</div>
+                   </div>
+                   <div className="glass p-4 rounded-lg bg-white/5 col-span-2 flex items-center justify-between">
+                     <div>
+                       <Wrench className="text-brand-orange mb-2" size={20} />
+                       <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Recambios y Accesorios</div>
+                       <div className="text-white text-sm font-medium">Stock en Grupo Melli Automoción</div>
+                     </div>
+                   </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                  <button className="flex-1 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center">
+                    Solicitar Presupuesto
+                  </button>
+                  <button 
+                    onClick={() => setSelectedModel(null)}
+                    className="flex-1 border border-white/20 text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:bg-white/5 transition-colors text-center"
+                  >
+                    Cerrar Ficha
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
