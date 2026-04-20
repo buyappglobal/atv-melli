@@ -10,12 +10,13 @@ export function Hero() {
           src="https://www.youtube.com/embed/Ipc7kuuCGHQ?autoplay=1&mute=1&controls=0&loop=1&playlist=Ipc7kuuCGHQ&modestbranding=1&showinfo=0&rel=0&disablekb=1" 
           title="CFMoto Background Video" 
           allow="autoplay; encrypted-media" 
-          className="w-[150vw] h-[150vh] sm:w-[120vw] sm:h-[120vh] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-60"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-80"
+          style={{ width: 'max(120vw, 213.33vh)', height: 'max(67.5vw, 120vh)' }}
           frameBorder="0"
         ></iframe>
-        <div className="absolute inset-0 bg-[#0F0F0F]/30 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/70 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/80 to-transparent md:w-[60%] pointer-events-none" />
+        <div className="absolute inset-0 bg-[#0F0F0F]/10 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/50 to-transparent md:w-[60%] pointer-events-none" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
