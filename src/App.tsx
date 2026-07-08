@@ -2,16 +2,30 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Models } from './components/Models';
 import { Catalog } from './components/Catalog';
+import { Testimonials } from './components/Testimonials';
 import { Contact } from './components/Contact';
+import { motion, useScroll, useSpring } from 'motion/react';
 
 export default function App() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001
+  });
+
   return (
     <div className="offroad-gradient min-h-screen text-white font-sans selection:bg-brand-orange/30 selection:text-white">
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-brand-orange origin-left z-[100]"
+        style={{ scaleX }}
+      />
       <Navbar />
       <main>
         <Hero />
         <Models />
         <Catalog />
+        <Testimonials />
         <Contact />
       </main>
       <footer className="glass py-8 border-t border-white/5 px-10">

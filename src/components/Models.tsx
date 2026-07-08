@@ -35,7 +35,13 @@ export function Models() {
   return (
     <section className="py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center md:text-left mb-16 md:flex justify-between items-end">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center md:text-left mb-16 md:flex justify-between items-end"
+        >
           <div className="max-w-2xl">
             <h2 className="text-3xl md:text-5xl font-extrabold uppercase tracking-[-0.04em] text-white leading-[0.9] mb-4">
               La Gama <span className="text-brand-orange">CFMoto</span>
@@ -47,15 +53,15 @@ export function Models() {
           <button className="hidden md:flex items-center gap-2 text-brand-orange text-xs font-bold uppercase tracking-widest hover:text-[#FFA057] transition-colors">
             Ver catálogo completo <ArrowRight size={20} />
           </button>
-        </div>
+        </motion.div>
 
         <div className="flex flex-col gap-12">
           {models.map((model, index) => (
             <motion.div 
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
+              viewport={{ once: true, margin: "0px" }}
+              transition={{ duration: 0.7, delay: 0.1 }}
               key={model.id} 
               className={`flex flex-col lg:flex-row gap-8 lg:gap-16 items-center ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
             >

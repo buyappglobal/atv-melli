@@ -19,6 +19,7 @@ export function Navbar() {
     { name: 'CForce (ATV)', href: '#cforce' },
     { name: 'UForce (Trabajo)', href: '#uforce' },
     { name: 'ZForce (Deportivo)', href: '#zforce' },
+    { name: 'Testimonios', href: '#testimonios' },
     { name: 'Post-Venta', href: '#post-venta' },
   ];
 

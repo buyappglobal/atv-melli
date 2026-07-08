@@ -53,15 +53,27 @@ export function Catalog() {
       <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-16">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-16"
+        >
           <span className="tech-label text-brand-orange mb-4 block">Catálogo Completo 2024</span>
           <h2 className="text-4xl md:text-6xl font-extrabold uppercase tracking-[-0.04em] text-white leading-[0.9]">
             Encuentra tu <br/><span className="text-brand-orange">Máquina Perfecta</span>
           </h2>
-        </div>
+        </motion.div>
 
         {/* Category Selector */}
-        <div className="flex justify-center gap-4 md:gap-8 mb-16 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "0px" }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex justify-center gap-4 md:gap-8 mb-16 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar"
+        >
           {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
             <button
               key={cat}
@@ -79,7 +91,7 @@ export function Catalog() {
               )}
             </button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Grid of Models */}
         <div className="min-h-[400px]">
@@ -94,9 +106,9 @@ export function Catalog() {
             >
               {catalogData[activeCategory].map((model, idx) => (
                 <motion.div 
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: idx * 0.05 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: idx * 0.1 }}
                   key={model.name} 
                   onClick={() => setSelectedModel(model)}
                   className="glass flex flex-col items-center justify-between p-6 rounded-xl hover:border-brand-orange/50 transition-colors group cursor-pointer"
