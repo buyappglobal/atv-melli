@@ -1,5 +1,6 @@
-import { motion } from 'motion/react';
-import { ArrowRight, Settings, Gauge, Key } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ArrowRight, Settings, Gauge, Key, X, Activity, Shield, Wrench } from 'lucide-react';
 
 const models = [
   {
@@ -29,6 +30,8 @@ const models = [
 ];
 
 export function Models() {
+  const [selectedModel, setSelectedModel] = useState<typeof models[0] | null>(null);
+
   return (
     <section className="py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,11 +101,14 @@ export function Models() {
                   })}
                 </div>
 
-                <div className="flex gap-4 flex-wrap">
-                  <button className="bg-brand-orange text-white px-8 py-4 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105">
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
+                  <button className="w-full sm:w-auto bg-brand-orange text-white px-8 py-4 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95">
                     Ver {model.name}
                   </button>
-                  <button className="border border-white/20 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:glass transition-all">
+                  <button 
+                    onClick={() => setSelectedModel(model)}
+                    className="w-full sm:w-auto border border-white/20 px-8 py-4 text-xs font-bold uppercase tracking-widest hover:glass transition-all active:scale-95"
+                  >
                     Ficha Técnica
                   </button>
                 </div>
@@ -111,6 +117,87 @@ export function Models() {
           ))}
         </div>
       </div>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {selectedModel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-8"
+          >
+            <div 
+              className="absolute inset-0 bg-[#0F0F0F]/90 backdrop-blur-md"
+              onClick={() => setSelectedModel(null)}
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="glass border border-white/10 w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10 rounded-t-3xl sm:rounded-2xl flex flex-col md:flex-row shadow-2xl"
+            >
+              <button 
+                onClick={() => setSelectedModel(null)}
+                className="absolute top-4 right-4 z-20 bg-black/50 hover:bg-brand-orange text-white p-2 rounded-full transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="w-full md:w-1/2 h-48 sm:h-64 md:h-auto relative bg-[#0F0F0F]">
+                <img 
+                  src={selectedModel.image} 
+                  alt={selectedModel.name}
+                  className="w-full h-full object-cover opacity-80"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-transparent to-transparent opacity-90" />
+                <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 pr-6">
+                  <span className="text-2xl sm:text-3xl font-extrabold italic uppercase tracking-tighter text-white">{selectedModel.name}</span>
+                </div>
+              </div>
+
+              <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-10 flex flex-col justify-center">
+                <span className="tech-label text-brand-orange mb-4 block">Ficha Técnica Completa</span>
+                <p className="text-gray-400 font-light mb-8 text-sm leading-relaxed">
+                  {selectedModel.description}
+                </p>
+
+                <div className="space-y-4">
+                   {Object.entries(selectedModel.specs).map(([key, value]) => {
+                    const icons: Record<string, any> = { cc: Gauge, power: Activity, traction: Settings, cargo: Shield, susp: Wrench, seats: Key };
+                    const Icon = icons[key] || Settings;
+                    const labels: Record<string, string> = { cc: 'Motor', power: 'Potencia', traction: 'Tracción', cargo: 'Capacidad de Carga', susp: 'Suspensión', seats: 'Plazas' };
+                    return (
+                      <div key={key} className="flex items-center justify-between border-b border-white/10 pb-4">
+                        <div className="flex items-center gap-3">
+                           <div className="bg-white/5 p-2 rounded-lg">
+                             <Icon size={18} className="text-brand-orange" />
+                           </div>
+                           <span className="text-gray-300 font-medium text-sm">{labels[key]}</span>
+                        </div>
+                        <span className="text-white font-bold text-sm text-right">{value}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <button 
+                  onClick={() => {
+                    setSelectedModel(null);
+                    document.getElementById('post-venta')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="mt-8 bg-brand-orange text-white w-full py-4 text-xs font-bold uppercase tracking-widest transition-all hover:scale-105"
+                >
+                  Solicitar Oferta
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

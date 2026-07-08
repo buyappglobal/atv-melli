@@ -129,7 +129,7 @@ export function Catalog() {
       {/* Internal Ficha Modal */}
       <AnimatePresence>
         {selectedModel && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" style={{ pointerEvents: 'auto' }}>
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6" style={{ pointerEvents: 'auto' }}>
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -139,10 +139,11 @@ export function Catalog() {
             />
             
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-4xl max-h-[90vh] glass bg-[#090909]/95 overflow-hidden rounded-2xl border border-white/10 shadow-2xl flex flex-col md:flex-row z-10"
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-4xl max-h-[90vh] sm:max-h-[85vh] glass bg-[#090909]/95 overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-white/10 shadow-2xl flex flex-col md:flex-row z-10"
             >
               <button 
                 onClick={() => setSelectedModel(null)}
@@ -151,7 +152,7 @@ export function Catalog() {
                 <X size={20} className="text-white" />
               </button>
 
-              <div className="w-full md:w-1/2 p-10 flex items-center justify-center bg-white/5 relative">
+              <div className="w-full md:w-1/2 p-6 sm:p-10 flex items-center justify-center bg-white/5 relative min-h-[250px]">
                 <div className="absolute inset-0 bg-brand-orange/10 mix-blend-overlay"></div>
                 <img 
                   src={selectedModel.image} 

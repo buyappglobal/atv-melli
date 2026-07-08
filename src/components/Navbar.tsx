@@ -22,7 +22,7 @@ export function Navbar() {
     { name: 'Post-Venta', href: '#post-venta' },
   ];
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  const handleNavClick = (e: any, href: string) => {
     e.preventDefault();
     setIsMobileMenuOpen(false);
     
@@ -98,26 +98,26 @@ export function Navbar() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="lg:hidden absolute top-full left-0 w-full bg-zinc-900 border-b border-zinc-800"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="lg:hidden fixed inset-0 z-40 bg-[#0F0F0F]/95 backdrop-blur-xl flex flex-col justify-center items-center px-4"
         >
-          <div className="px-4 py-4 flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-8 w-full max-w-sm">
             {navLinks.map((link) => (
               <a
                 key={link.name}
                 href={link.href}
                 onClick={(e) => handleNavClick(e, link.href)}
-                className="text-xs font-bold uppercase tracking-widest text-zinc-300 hover:text-brand-orange px-2 py-1"
+                className="text-2xl font-black uppercase tracking-widest text-zinc-300 hover:text-brand-orange transition-colors"
               >
                 {link.name}
               </a>
             ))}
             <button 
               onClick={(e: any) => handleNavClick(e, '#post-venta')}
-              className="flex justify-center items-center gap-2 bg-white text-black px-6 py-3 text-xs font-bold uppercase tracking-widest rounded-full w-full mt-4 transition-all hover:scale-105"
+              className="mt-8 bg-brand-orange text-white px-8 py-4 text-sm font-bold uppercase tracking-widest rounded-full w-full transition-all active:scale-95"
             >
-              Contacto
+              Contacto / Taller
             </button>
           </div>
         </motion.div>

@@ -55,17 +55,17 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-4 w-full"
           >
             <button 
               onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}
-              className="bg-brand-orange text-white px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105"
+              className="w-full sm:w-auto bg-brand-orange text-white px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105 active:scale-95"
             >
               Ver Catálogo CFMoto
             </button>
             <button 
               onClick={() => document.getElementById('post-venta')?.scrollIntoView({ behavior: 'smooth' })}
-              className="border border-white/20 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:glass transition-all"
+              className="w-full sm:w-auto border border-white/20 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:glass transition-all active:scale-95"
             >
               Agenda tu Prueba
             </button>

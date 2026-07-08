@@ -2,6 +2,7 @@ import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { Models } from './components/Models';
 import { Catalog } from './components/Catalog';
+import { Contact } from './components/Contact';
 
 export default function App() {
   return (
@@ -11,8 +12,9 @@ export default function App() {
         <Hero />
         <Models />
         <Catalog />
+        <Contact />
       </main>
-      <footer id="post-venta" className="glass py-8 border-t border-white/5 px-10 mt-12">
+      <footer className="glass py-8 border-t border-white/5 px-10">
         <div className="flex justify-between items-center max-w-7xl mx-auto flex-col md:flex-row gap-6">
           <div className="flex flex-col text-center md:text-left">
              <span className="tech-label opacity-70">Stack Tecnológico</span>
