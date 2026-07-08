@@ -30,6 +30,19 @@ body {
   color: #666;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
+}
+
+section {
+  scroll-snap-align: start;
 }

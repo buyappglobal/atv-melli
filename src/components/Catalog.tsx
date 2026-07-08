@@ -72,7 +72,7 @@ export function Catalog() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center gap-4 md:gap-8 mb-16 border-b border-white/10 pb-4 overflow-x-auto no-scrollbar"
+          className="flex justify-center gap-4 md:gap-8 mb-16 border-b border-white/10 pb-4 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
           {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
             <button
@@ -86,7 +86,7 @@ export function Catalog() {
               {activeCategory === cat && (
                 <motion.div 
                   layoutId="activeTab"
-                  className="absolute bottom-[-17px] left-0 right-0 h-[2px] bg-brand-orange"
+                  className="absolute bottom-[-16px] left-0 right-0 h-[2px] bg-brand-orange"
                 />
               )}
             </button>
@@ -208,7 +208,16 @@ export function Catalog() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                  <button className="flex-1 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center">
+                  <button 
+                    onClick={() => {
+                      window.dispatchEvent(new CustomEvent('select-model', { 
+                        detail: { family: activeCategory, model: selectedModel.name } 
+                      }));
+                      setSelectedModel(null);
+                      document.getElementById('post-venta')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="flex-1 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center"
+                  >
                     Solicitar Presupuesto
                   </button>
                   <button 

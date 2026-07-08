@@ -58,6 +58,17 @@ export function Contact() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  useEffect(() => {
+    const handleSelectModel = (e: CustomEvent) => {
+      setReason('stock');
+      setFamily(e.detail.family);
+      setModel(e.detail.model);
+    };
+
+    window.addEventListener('select-model', handleSelectModel as EventListener);
+    return () => window.removeEventListener('select-model', handleSelectModel as EventListener);
+  }, []);
+
   const generateMessage = () => {
     return `prueba atv melli\n\nHola, soy ${name || 'un cliente'}.\nMotivo: ${reason === 'taller' ? 'Cita de Taller / Mantenimiento' : 'Información de Stock'}\nVehículo: ${family} - ${model}\n\nMe gustaría recibir más información.`;
   };
