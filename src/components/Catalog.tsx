@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, X, Gauge, ShieldCheck, Wrench } from 'lucide-react';
 
@@ -35,8 +35,21 @@ export function Catalog() {
   const [activeCategory, setActiveCategory] = useState<keyof typeof catalogData>('CFORCE');
   const [selectedModel, setSelectedModel] = useState<{name: string, image: string} | null>(null);
 
+  useEffect(() => {
+    const handleCategoryChange = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      const category = customEvent.detail as keyof typeof catalogData;
+      if (['CFORCE', 'UFORCE', 'ZFORCE'].includes(category)) {
+        setActiveCategory(category);
+      }
+    };
+
+    window.addEventListener('changeCatalogCategory', handleCategoryChange);
+    return () => window.removeEventListener('changeCatalogCategory', handleCategoryChange);
+  }, []);
+
   return (
-    <section className="py-24 relative overflow-hidden" id="modelos">
+    <section className="py-24 relative overflow-hidden" id="catalogo">
       <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

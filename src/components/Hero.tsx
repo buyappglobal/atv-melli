@@ -3,7 +3,7 @@ import { ArrowRight, Mountain, ShieldCheck, Wrench } from 'lucide-react';
 
 export function Hero() {
   return (
-    <div className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <div id="inicio" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Video with Overlay */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <iframe 
@@ -57,10 +57,16 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <button className="bg-brand-orange text-white px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105">
+            <button 
+              onClick={() => document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' })}
+              className="bg-brand-orange text-white px-8 py-4 text-sm font-bold uppercase tracking-widest transition-all hover:scale-105"
+            >
               Ver Catálogo CFMoto
             </button>
-            <button className="border border-white/20 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:glass transition-all">
+            <button 
+              onClick={() => document.getElementById('post-venta')?.scrollIntoView({ behavior: 'smooth' })}
+              className="border border-white/20 px-8 py-4 text-sm font-bold uppercase tracking-widest hover:glass transition-all"
+            >
               Agenda tu Prueba
             </button>
           </motion.div>

@@ -12,7 +12,7 @@ export default function App() {
         <Models />
         <Catalog />
       </main>
-      <footer className="glass py-8 border-t border-white/5 px-10 mt-12">
+      <footer id="post-venta" className="glass py-8 border-t border-white/5 px-10 mt-12">
         <div className="flex justify-between items-center max-w-7xl mx-auto flex-col md:flex-row gap-6">
           <div className="flex flex-col text-center md:text-left">
              <span className="tech-label opacity-70">Stack Tecnológico</span>

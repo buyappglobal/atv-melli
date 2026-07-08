@@ -15,12 +15,33 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Inicio', href: '#' },
-    { name: 'CForce (ATV)', href: '#' },
-    { name: 'UForce (Trabajo)', href: '#' },
-    { name: 'ZForce (Deportivo)', href: '#' },
-    { name: 'Post-Venta', href: '#' },
+    { name: 'Inicio', href: '#inicio' },
+    { name: 'CForce (ATV)', href: '#cforce' },
+    { name: 'UForce (Trabajo)', href: '#uforce' },
+    { name: 'ZForce (Deportivo)', href: '#zforce' },
+    { name: 'Post-Venta', href: '#post-venta' },
   ];
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+    setIsMobileMenuOpen(false);
+    
+    // Si es una de las categorías del catálogo, disparamos evento y bajamos al catálogo
+    if (['#cforce', '#uforce', '#zforce'].includes(href)) {
+      const category = href.replace('#', '').toUpperCase();
+      window.dispatchEvent(new CustomEvent('changeCatalogCategory', { detail: category }));
+      
+      const catalogEl = document.getElementById('catalogo');
+      if (catalogEl) {
+        catalogEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      const el = document.getElementById(href.replace('#', ''));
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <header
@@ -48,6 +69,7 @@ export function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="text-[11px] font-bold uppercase tracking-widest text-zinc-300 hover:text-brand-orange transition-colors"
               >
                 {link.name}
@@ -57,7 +79,10 @@ export function Navbar() {
 
           {/* CTA & Mobile Toggle */}
           <div className="flex items-center gap-4">
-            <button className="hidden sm:flex items-center justify-center gap-2 bg-white text-black px-6 py-2 text-[11px] font-bold uppercase tracking-widest rounded-full transition-all hover:scale-105">
+            <button 
+              onClick={(e: any) => handleNavClick(e, '#post-venta')}
+              className="hidden sm:flex items-center justify-center gap-2 bg-white text-black px-6 py-2 text-[11px] font-bold uppercase tracking-widest rounded-full transition-all hover:scale-105"
+            >
               Contacto
             </button>
             <button
@@ -82,12 +107,16 @@ export function Navbar() {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={(e) => handleNavClick(e, link.href)}
                 className="text-xs font-bold uppercase tracking-widest text-zinc-300 hover:text-brand-orange px-2 py-1"
               >
                 {link.name}
               </a>
             ))}
-            <button className="flex justify-center items-center gap-2 bg-white text-black px-6 py-3 text-xs font-bold uppercase tracking-widest rounded-full w-full mt-4 transition-all hover:scale-105">
+            <button 
+              onClick={(e: any) => handleNavClick(e, '#post-venta')}
+              className="flex justify-center items-center gap-2 bg-white text-black px-6 py-3 text-xs font-bold uppercase tracking-widest rounded-full w-full mt-4 transition-all hover:scale-105"
+            >
               Contacto
             </button>
           </div>
