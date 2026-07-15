@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, X, Gauge, ShieldCheck, Wrench, FileText } from 'lucide-react';
+import { ChevronRight, X, Gauge, ShieldCheck, Wrench, FileText, Scale } from 'lucide-react';
 
 const catalogData = {
   CFORCE: [
@@ -46,6 +46,15 @@ export type ModelSpec = {
 export function Catalog() {
   const [activeCategory, setActiveCategory] = useState<keyof typeof catalogData>('CFORCE');
   const [selectedModel, setSelectedModel] = useState<ModelSpec | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
+  const [compareList, setCompareList] = useState<ModelSpec[]>([]);
+  const [showCompareModal, setShowCompareModal] = useState(false);
+
+  useEffect(() => {
+    if (compareList.length === 2) {
+      setShowCompareModal(true);
+    }
+  }, [compareList]);
 
   useEffect(() => {
     const handleCategoryChange = (e: Event) => {
@@ -84,25 +93,40 @@ export function Catalog() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex justify-center gap-4 md:gap-8 mb-16 border-b border-white/10 pb-4 overflow-x-auto overflow-y-hidden no-scrollbar"
+          className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16 border-b border-white/10 pb-4 overflow-x-auto overflow-y-hidden no-scrollbar"
         >
-          {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`text-xl md:text-2xl font-bold uppercase tracking-widest transition-all whitespace-nowrap px-4 py-2 relative ${
-                activeCategory === cat ? 'text-brand-orange' : 'text-zinc-600 hover:text-white'
-              }`}
-            >
-              {cat}
-              {activeCategory === cat && (
-                <motion.div 
-                  layoutId="activeTab"
-                  className="absolute bottom-[-16px] left-0 right-0 h-[2px] bg-brand-orange"
-                />
-              )}
-            </button>
-          ))}
+          <div className="flex gap-4 md:gap-8">
+            {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`text-xl md:text-2xl font-bold uppercase tracking-widest transition-all whitespace-nowrap px-4 py-2 relative ${
+                  activeCategory === cat ? 'text-brand-orange' : 'text-zinc-600 hover:text-white'
+                }`}
+              >
+                {cat}
+                {activeCategory === cat && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-[-16px] left-0 right-0 h-[2px] bg-brand-orange"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+          
+          <button
+             onClick={() => {
+               setIsComparing(!isComparing);
+               if (isComparing) setCompareList([]);
+             }}
+             className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all whitespace-nowrap ${
+                isComparing ? 'bg-brand-orange text-white' : 'glass text-zinc-300 hover:text-white hover:bg-white/10'
+             }`}
+          >
+             <Scale size={16} />
+             {isComparing ? 'Cancelar Comparativa' : 'Comparar Modelos'}
+          </button>
         </motion.div>
 
         {/* Category Description */}
@@ -151,8 +175,22 @@ export function Catalog() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   key={model.name} 
-                  onClick={() => setSelectedModel(model)}
-                  className="glass flex flex-col items-center justify-between p-6 rounded-xl hover:border-brand-orange/50 hover:scale-105 hover:shadow-2xl hover:shadow-brand-orange/20 transition-all duration-300 group cursor-pointer"
+                  onClick={() => {
+                    if (isComparing) {
+                      if (compareList.find(m => m.name === model.name)) {
+                        setCompareList(prev => prev.filter(m => m.name !== model.name));
+                      } else if (compareList.length < 2) {
+                        setCompareList(prev => [...prev, model]);
+                      }
+                    } else {
+                      setSelectedModel(model);
+                    }
+                  }}
+                  className={`glass flex flex-col items-center justify-between p-6 rounded-xl transition-all duration-300 group cursor-pointer ${
+                    isComparing && compareList.find(m => m.name === model.name) 
+                      ? 'border-brand-orange ring-2 ring-brand-orange scale-105 shadow-2xl shadow-brand-orange/20' 
+                      : 'hover:border-brand-orange/50 hover:scale-105 hover:shadow-2xl hover:shadow-brand-orange/20'
+                  }`}
                 >
                   <div className="h-40 w-full flex items-center justify-center mb-6">
                     <img 
@@ -168,8 +206,16 @@ export function Catalog() {
                   </div>
                   <div className="w-full flex flex-col items-center">
                     <span className="text-white font-bold text-center tracking-tight text-lg mb-4">{model.name}</span>
-                    <button className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-brand-orange group-hover:text-white transition-colors">
-                      Ver Ficha <ChevronRight size={14} />
+                    <button className={`flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest transition-colors ${
+                      isComparing && compareList.find(m => m.name === model.name)
+                        ? 'text-white'
+                        : 'text-brand-orange group-hover:text-white'
+                    }`}>
+                      {isComparing ? (
+                         compareList.find(m => m.name === model.name) ? 'Seleccionado' : 'Añadir a comparar'
+                      ) : (
+                         <>Ver Ficha <ChevronRight size={14} /></>
+                      )}
                     </button>
                   </div>
                 </motion.div>
@@ -182,6 +228,110 @@ export function Catalog() {
            * Especificaciones preliminares sujetas a la homologación europea. Las versiones deslimitadas o pendientes pueden variar.
         </div>
       </div>
+
+      {/* Compare Modal */}
+      <AnimatePresence>
+        {showCompareModal && compareList.length === 2 && (
+          <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-6" style={{ pointerEvents: 'auto' }}>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                 setShowCompareModal(false);
+                 setCompareList([]);
+                 setIsComparing(false);
+              }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, y: "100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[85vh] glass bg-[#090909]/95 overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-white/10 shadow-2xl flex flex-col z-10"
+            >
+              <button 
+                onClick={() => {
+                   setShowCompareModal(false);
+                   setCompareList([]);
+                   setIsComparing(false);
+                }}
+                className="absolute top-4 right-4 z-20 p-2 glass rounded-full hover:bg-white/10 transition-colors"
+              >
+                <X size={20} className="text-white" />
+              </button>
+
+              <div className="p-6 sm:p-8 text-center border-b border-white/10 shrink-0">
+                <span className="tech-label text-brand-orange mb-2 block">Comparativa</span>
+                <h3 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white">Batalla de Modelos</h3>
+              </div>
+
+              <div className="flex flex-col md:flex-row overflow-y-auto no-scrollbar bg-black/40">
+                {compareList.map((model, idx) => (
+                  <div key={idx} className={`w-full md:w-1/2 p-6 sm:p-10 flex flex-col ${idx === 0 ? 'border-b md:border-b-0 md:border-r border-white/10' : ''}`}>
+                    <div className="h-48 flex items-center justify-center mb-8 bg-white/5 rounded-xl p-4 relative shrink-0">
+                       <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay rounded-xl"></div>
+                       <img src={model.image} alt={model.name} className="max-h-full object-contain relative z-10 drop-shadow-2xl" />
+                    </div>
+                    <h4 className="text-2xl font-black uppercase tracking-tight text-white mb-8 text-center">{model.name}</h4>
+                    
+                    <div className="space-y-4">
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                            <Gauge className="text-brand-orange" size={16} />
+                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Motor</span>
+                         </div>
+                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.engine}<br/>{model.specs.power}</span>
+                       </div>
+                       
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                            <ShieldCheck className="text-brand-orange" size={16} />
+                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Tracción</span>
+                         </div>
+                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.traction}</span>
+                       </div>
+
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                            <Wrench className="text-brand-orange" size={16} />
+                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Capacidad</span>
+                         </div>
+                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.capacity}</span>
+                       </div>
+
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                            <FileText className="text-brand-orange" size={16} />
+                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Homologación</span>
+                         </div>
+                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.homologation}</span>
+                       </div>
+                    </div>
+                    
+                    <button 
+                      onClick={() => {
+                        window.dispatchEvent(new CustomEvent('select-model', { 
+                          detail: { family: activeCategory, model: model.name } 
+                        }));
+                        setShowCompareModal(false);
+                        setCompareList([]);
+                        setIsComparing(false);
+                        document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="mt-8 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center rounded-lg w-full"
+                    >
+                      Me quedo con este
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Internal Ficha Modal */}
       <AnimatePresence>
