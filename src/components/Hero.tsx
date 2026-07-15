@@ -6,18 +6,44 @@ export function Hero() {
   const [textState, setTextState] = useState<'hidden' | 'visible_temp' | 'hidden_again' | 'visible_permanent'>('hidden');
 
   useEffect(() => {
-    // Show after 5 seconds
-    const t1 = setTimeout(() => setTextState('visible_temp'), 5000);
-    // Hide 5 seconds after showing
-    const t2 = setTimeout(() => setTextState('hidden_again'), 10000);
+    let t1: ReturnType<typeof setTimeout>;
+    let t2: ReturnType<typeof setTimeout>;
+    let t3: ReturnType<typeof setTimeout>;
+
+    // Show after 3 seconds
+    t1 = setTimeout(() => {
+      setTextState((prev) => prev === 'hidden' ? 'visible_temp' : prev);
+      // Hide 5 seconds after showing
+      t2 = setTimeout(() => {
+        setTextState((prev) => prev === 'visible_temp' ? 'hidden_again' : prev);
+      }, 5000);
+    }, 3000);
     
     // The video is ~43 seconds long. Show permanently when it loops.
-    const t3 = setTimeout(() => setTextState('visible_permanent'), 43000);
+    t3 = setTimeout(() => setTextState('visible_permanent'), 43000);
+
+    const handleInteraction = () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      setTextState('visible_permanent');
+    };
+
+    window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+    window.addEventListener('click', handleInteraction, { once: true, passive: true });
+    window.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+    window.addEventListener('keydown', handleInteraction, { once: true, passive: true });
+    window.addEventListener('wheel', handleInteraction, { once: true, passive: true });
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      window.removeEventListener('scroll', handleInteraction);
+      window.removeEventListener('click', handleInteraction);
+      window.removeEventListener('touchstart', handleInteraction);
+      window.removeEventListener('keydown', handleInteraction);
+      window.removeEventListener('wheel', handleInteraction);
     };
   }, []);
 
