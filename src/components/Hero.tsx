@@ -1,51 +1,57 @@
 import { motion } from 'motion/react';
-import { ArrowRight, Mountain, ShieldCheck, Wrench } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ArrowRight, Mountain, ShieldCheck, Wrench, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
 
 export function Hero() {
   const [textState, setTextState] = useState<'hidden' | 'visible_temp' | 'hidden_again' | 'visible_permanent'>('hidden');
+  const t1 = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const t2 = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const t3 = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
-    let t1: ReturnType<typeof setTimeout>;
-    let t2: ReturnType<typeof setTimeout>;
-    let t3: ReturnType<typeof setTimeout>;
-
     // Show after 3 seconds
-    t1 = setTimeout(() => {
+    t1.current = setTimeout(() => {
       setTextState((prev) => prev === 'hidden' ? 'visible_temp' : prev);
       // Hide 5 seconds after showing
-      t2 = setTimeout(() => {
+      t2.current = setTimeout(() => {
         setTextState((prev) => prev === 'visible_temp' ? 'hidden_again' : prev);
       }, 5000);
     }, 3000);
     
     // The video is ~43 seconds long. Show permanently when it loops.
-    t3 = setTimeout(() => setTextState('visible_permanent'), 43000);
+    t3.current = setTimeout(() => setTextState('visible_permanent'), 43000);
 
+    return () => {
+      clearTimeout(t1.current);
+      clearTimeout(t2.current);
+      clearTimeout(t3.current);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleInteraction = () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
+      clearTimeout(t1.current);
+      clearTimeout(t2.current);
+      clearTimeout(t3.current);
       setTextState('visible_permanent');
     };
 
-    window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
-    window.addEventListener('click', handleInteraction, { once: true, passive: true });
-    window.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
-    window.addEventListener('keydown', handleInteraction, { once: true, passive: true });
-    window.addEventListener('wheel', handleInteraction, { once: true, passive: true });
+    if (textState !== 'visible_permanent') {
+      window.addEventListener('scroll', handleInteraction, { once: true, passive: true });
+      window.addEventListener('click', handleInteraction, { once: true, passive: true });
+      window.addEventListener('touchstart', handleInteraction, { once: true, passive: true });
+      window.addEventListener('keydown', handleInteraction, { once: true, passive: true });
+      window.addEventListener('wheel', handleInteraction, { once: true, passive: true });
+    }
 
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
       window.removeEventListener('scroll', handleInteraction);
       window.removeEventListener('click', handleInteraction);
       window.removeEventListener('touchstart', handleInteraction);
       window.removeEventListener('keydown', handleInteraction);
       window.removeEventListener('wheel', handleInteraction);
     };
-  }, []);
+  }, [textState]);
 
   const wrapperVariants = {
     hidden: { opacity: 0, filter: 'blur(10px)', scale: 0.95 },
@@ -57,27 +63,44 @@ export function Hero() {
   return (
     <div id="inicio" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#0F0F0F]">
       {/* Background Video with Overlay */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {/* Invisible overlay to catch all clicks/touches and prevent them from reaching the iframe (iOS/Mobile bug fix) */}
+        <div className="absolute inset-0 z-20 pointer-events-auto bg-transparent"></div>
+        
         <iframe 
-          src="https://www.youtube.com/embed/Ipc7kuuCGHQ?autoplay=1&mute=1&controls=0&loop=1&playlist=Ipc7kuuCGHQ&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1" 
+          src="https://www.youtube.com/embed/Ipc7kuuCGHQ?autoplay=1&mute=1&controls=0&loop=1&playlist=Ipc7kuuCGHQ&modestbranding=1&showinfo=0&rel=0&disablekb=1&playsinline=1&fs=0&iv_load_policy=3" 
           title="CFMoto Background Video" 
           allow="autoplay; encrypted-media" 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-90 z-0"
           style={{ width: 'max(120vw, 213.33vh)', height: 'max(67.5vw, 120vh)' }}
           frameBorder="0"
+          tabIndex={-1}
         ></iframe>
-        <div className="absolute inset-0 bg-[#0F0F0F]/0 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/20 to-transparent pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent md:w-[60%] pointer-events-none" />
+        <div className="absolute inset-0 bg-[#0F0F0F]/0 pointer-events-none z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/20 to-transparent pointer-events-none z-10" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0F0F0F] via-[#0F0F0F]/40 to-transparent md:w-[60%] pointer-events-none z-10" />
       </div>
 
       <motion.div 
-        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full"
+        className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full pointer-events-auto"
         variants={wrapperVariants}
         initial="hidden"
         animate={textState}
         transition={{ duration: 1.5, ease: "easeInOut" }}
       >
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            clearTimeout(t1.current);
+            clearTimeout(t2.current);
+            clearTimeout(t3.current);
+            setTextState('hidden_again');
+          }}
+          className="absolute top-0 right-4 sm:right-6 lg:right-8 p-2 text-white/50 hover:text-white hover:bg-white/10 rounded-full transition-colors z-20 pointer-events-auto bg-black/20 backdrop-blur-sm border border-white/10"
+          aria-label="Ocultar textos"
+        >
+          <X size={20} />
+        </button>
         <div className="max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

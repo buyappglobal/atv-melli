@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, X, Gauge, ShieldCheck, Wrench, FileText, Scale } from 'lucide-react';
 
@@ -49,6 +49,21 @@ export function Catalog() {
   const [isComparing, setIsComparing] = useState(false);
   const [compareList, setCompareList] = useState<ModelSpec[]>([]);
   const [showCompareModal, setShowCompareModal] = useState(false);
+  const [isStuck, setIsStuck] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect();
+        // Navbar is ~56px high when scrolled (32px content + 12px py * 2).
+        setIsStuck(rect.top <= 57);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (compareList.length === 2) {
@@ -70,7 +85,7 @@ export function Catalog() {
   }, []);
 
   return (
-    <section className="py-24 relative overflow-hidden" id="catalogo">
+    <section className="py-24 relative" id="catalogo">
       <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -88,46 +103,59 @@ export function Catalog() {
         </motion.div>
 
         {/* Category Selector */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px" }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16 border-b border-white/10 pb-4 overflow-x-auto overflow-y-hidden no-scrollbar"
+        <div 
+          ref={headerRef}
+          className={`sticky top-[56px] z-40 transition-all duration-300 mb-16 ${
+            isStuck 
+              ? 'bg-transparent backdrop-blur-sm pt-2 pb-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8' 
+              : 'pt-0'
+          }`}
         >
-          <div className="flex gap-4 md:gap-8">
-            {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`text-xl md:text-2xl font-bold uppercase tracking-widest transition-all whitespace-nowrap px-4 py-2 relative ${
-                  activeCategory === cat ? 'text-brand-orange' : 'text-zinc-600 hover:text-white'
-                }`}
-              >
-                {cat}
-                {activeCategory === cat && (
-                  <motion.div 
-                    layoutId="activeTab"
-                    className="absolute bottom-[-16px] left-0 right-0 h-[2px] bg-brand-orange"
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-          
-          <button
-             onClick={() => {
-               setIsComparing(!isComparing);
-               if (isComparing) setCompareList([]);
-             }}
-             className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all whitespace-nowrap ${
-                isComparing ? 'bg-brand-orange text-white' : 'glass text-zinc-300 hover:text-white hover:bg-white/10'
-             }`}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px" }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col items-center justify-center gap-3 sm:gap-4 transition-all duration-300"
           >
-             <Scale size={16} />
-             {isComparing ? 'Cancelar Comparativa' : 'Comparar Modelos'}
-          </button>
-        </motion.div>
+            <div className={`flex justify-center w-full overflow-x-auto no-scrollbar gap-1.5 sm:gap-2 shrink-0 ${isStuck ? 'pb-0' : 'pb-1 md:pb-0'}`}>
+              {(Object.keys(catalogData) as Array<keyof typeof catalogData>).map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`font-bold uppercase tracking-widest transition-all whitespace-nowrap rounded-full shrink-0 border ${
+                    isStuck 
+                      ? 'text-[10px] px-3 py-1.5' 
+                      : 'text-xs sm:text-sm md:text-base px-4 py-2 sm:px-6 sm:py-3'
+                  } ${
+                    activeCategory === cat 
+                      ? 'bg-brand-orange border-brand-orange text-white shadow-[0_0_15px_rgba(242,125,38,0.4)] scale-105' 
+                      : 'bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            
+            <button
+               onClick={() => {
+                 setIsComparing(!isComparing);
+                 if (isComparing) setCompareList([]);
+               }}
+               className={`flex items-center gap-1.5 rounded-full font-bold uppercase tracking-widest transition-all whitespace-nowrap shrink-0 ${
+                  isStuck 
+                    ? 'text-[9px] px-3 py-1.5' 
+                    : 'text-[10px] md:text-xs px-6 py-2'
+               } ${
+                  isComparing ? 'bg-brand-orange text-white' : 'glass text-zinc-300 hover:text-white hover:bg-white/10'
+               }`}
+            >
+               <Scale size={isStuck ? 12 : 16} />
+               {isComparing ? (isStuck ? 'Cancelar' : 'Cancelar Comparativa') : (isStuck ? 'Comparar' : 'Comparar Modelos')}
+            </button>
+          </motion.div>
+        </div>
 
         {/* Category Description */}
         <div className="min-h-[40px] mb-8">
@@ -250,7 +278,7 @@ export function Catalog() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[85vh] glass bg-[#090909]/95 overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-white/10 shadow-2xl flex flex-col z-10"
+              className="relative w-full max-w-5xl max-h-[90dvh] sm:max-h-[85vh] glass bg-[#090909]/95 overflow-hidden rounded-t-3xl sm:rounded-2xl border-t sm:border border-white/10 shadow-2xl flex flex-col z-10"
             >
               <button 
                 onClick={() => {
@@ -268,46 +296,48 @@ export function Catalog() {
                 <h3 className="text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white">Batalla de Modelos</h3>
               </div>
 
-              <div className="flex flex-col md:flex-row overflow-y-auto no-scrollbar bg-black/40">
+              <div className="flex flex-row flex-1 overflow-y-auto min-h-0 bg-black/40 pb-24 sm:pb-0">
                 {compareList.map((model, idx) => (
-                  <div key={idx} className={`w-full md:w-1/2 p-6 sm:p-10 flex flex-col ${idx === 0 ? 'border-b md:border-b-0 md:border-r border-white/10' : ''}`}>
-                    <div className="h-48 flex items-center justify-center mb-8 bg-white/5 rounded-xl p-4 relative shrink-0">
+                  <div key={idx} className={`w-1/2 p-3 sm:p-10 flex flex-col ${idx === 0 ? 'border-r border-white/10' : ''}`}>
+                    <div className="h-28 sm:h-48 flex items-center justify-center mb-4 sm:mb-8 bg-white/5 rounded-xl p-2 sm:p-4 relative shrink-0">
                        <div className="absolute inset-0 bg-brand-orange/5 mix-blend-overlay rounded-xl"></div>
                        <img src={model.image} alt={model.name} className="max-h-full object-contain relative z-10 drop-shadow-2xl" />
                     </div>
-                    <h4 className="text-2xl font-black uppercase tracking-tight text-white mb-8 text-center">{model.name}</h4>
+                    <div className="min-h-[48px] sm:min-h-[64px] flex items-center justify-center mb-4 sm:mb-8">
+                      <h4 className="text-sm sm:text-2xl font-black uppercase tracking-tight text-white text-center leading-tight">{model.name}</h4>
+                    </div>
                     
-                    <div className="space-y-4">
-                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
-                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                            <Gauge className="text-brand-orange" size={16} />
-                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Motor</span>
+                    <div className="space-y-2 sm:space-y-4 flex-1">
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-3 sm:p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-0 justify-center sm:justify-start">
+                            <Gauge className="text-brand-orange hidden sm:block" size={16} />
+                            <span className="text-[9px] sm:text-xs text-brand-orange uppercase font-bold tracking-widest">Motor</span>
                          </div>
-                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.engine}<br/>{model.specs.power}</span>
+                         <span className="text-[10px] sm:text-sm text-white text-center sm:text-right font-medium leading-tight">{model.specs.engine}<br/>{model.specs.power}</span>
                        </div>
                        
-                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
-                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                            <ShieldCheck className="text-brand-orange" size={16} />
-                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Tracción</span>
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-3 sm:p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-0 justify-center sm:justify-start">
+                            <ShieldCheck className="text-brand-orange hidden sm:block" size={16} />
+                            <span className="text-[9px] sm:text-xs text-brand-orange uppercase font-bold tracking-widest">Tracción</span>
                          </div>
-                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.traction}</span>
+                         <span className="text-[10px] sm:text-sm text-white text-center sm:text-right font-medium leading-tight">{model.specs.traction}</span>
                        </div>
 
-                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
-                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                            <Wrench className="text-brand-orange" size={16} />
-                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Capacidad</span>
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-3 sm:p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-0 justify-center sm:justify-start">
+                            <Wrench className="text-brand-orange hidden sm:block" size={16} />
+                            <span className="text-[9px] sm:text-xs text-brand-orange uppercase font-bold tracking-widest">Capacidad</span>
                          </div>
-                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.capacity}</span>
+                         <span className="text-[10px] sm:text-sm text-white text-center sm:text-right font-medium leading-tight">{model.specs.capacity}</span>
                        </div>
 
-                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-4 rounded-lg bg-white/5 border border-white/5">
-                         <div className="flex items-center gap-2 mb-2 sm:mb-0">
-                            <FileText className="text-brand-orange" size={16} />
-                            <span className="text-xs text-brand-orange uppercase font-bold tracking-widest">Homologación</span>
+                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center glass p-3 sm:p-4 rounded-lg bg-white/5 border border-white/5">
+                         <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-0 justify-center sm:justify-start">
+                            <FileText className="text-brand-orange hidden sm:block" size={16} />
+                            <span className="text-[9px] sm:text-xs text-brand-orange uppercase font-bold tracking-widest">Homolog.</span>
                          </div>
-                         <span className="text-sm text-white sm:text-right font-medium">{model.specs.homologation}</span>
+                         <span className="text-[10px] sm:text-sm text-white text-center sm:text-right font-medium leading-tight">{model.specs.homologation}</span>
                        </div>
                     </div>
                     
@@ -321,9 +351,10 @@ export function Catalog() {
                         setIsComparing(false);
                         document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="mt-8 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center rounded-lg w-full"
+                      className="mt-6 sm:mt-8 bg-brand-orange text-white py-3 sm:py-4 px-2 sm:px-6 text-[10px] sm:text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center rounded-lg w-full shrink-0"
                     >
-                      Me quedo con este
+                      <span className="sm:hidden">Elegir</span>
+                      <span className="hidden sm:inline">Me quedo con este</span>
                     </button>
                   </div>
                 ))}
