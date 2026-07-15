@@ -1,39 +1,51 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronRight, X, Gauge, ShieldCheck, Wrench } from 'lucide-react';
+import { ChevronRight, X, Gauge, ShieldCheck, Wrench, FileText } from 'lucide-react';
 
 const catalogData = {
   CFORCE: [
-    { name: 'CFORCE 1000 MV', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cde6aa3c21fac2782fb3_CFORCE_1000MV.webp' },
-    { name: 'CFORCE 1000 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce0ac5e27c5fc6fb8871_CFORCE_1000T.webp' },
-    { name: 'CFORCE 1000 OVERLAND', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cdf6f255d29df1d6c910_CFORCE_1000OV.webp' },
-    { name: 'CFORCE 850 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cea962a0c0a68d0697e0_CFORCE_850T.webp' },
-    { name: 'CFORCE 625 OVERLAND', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/67d8813294a60d904a2ed9cf_CFORCE_625%20TOURING_OVERLAND_Granite%20Ridge_Left45.webp' },
-    { name: 'CFORCE 625 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce84c227e2fd7ede9e5c_CFORCE_625T.webp' },
-    { name: 'CFORCE 625', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce3ea44aa607e214b432_CFORCE_625.webp' },
-    { name: 'CFORCE 520L', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce1a0d8b5ef424f36c49_CFORCE_520L.webp' },
-    { name: 'CFORCE 520S', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce2809b40338817a4658_CFORCE_520S.webp' }
+    { name: 'CFORCE 1000 MV', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cde6aa3c21fac2782fb3_CFORCE_1000MV.webp', specs: { engine: '963cc V-Twin', power: '90 CV (Deslimitado)', traction: '2WD/4WD/4WD Lock', capacity: '1 Plaza', homologation: 'T3b (Tractor)' } },
+    { name: 'CFORCE 1000 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce0ac5e27c5fc6fb8871_CFORCE_1000T.webp', specs: { engine: '963cc V-Twin', power: '90 CV (Deslimitado)', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 1000 OVERLAND', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cdf6f255d29df1d6c910_CFORCE_1000OV.webp', specs: { engine: '963cc V-Twin', power: '90 CV (Deslimitado)', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 850 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cea962a0c0a68d0697e0_CFORCE_850T.webp', specs: { engine: '800cc V-Twin', power: '75 CV (Deslimitado)', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 625 OVERLAND', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/67d8813294a60d904a2ed9cf_CFORCE_625%20TOURING_OVERLAND_Granite%20Ridge_Left45.webp', specs: { engine: '580cc Monocilíndrico', power: '45 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 625 TOURING', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce84c227e2fd7ede9e5c_CFORCE_625T.webp', specs: { engine: '580cc Monocilíndrico', power: '45 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 625', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce3ea44aa607e214b432_CFORCE_625.webp', specs: { engine: '580cc Monocilíndrico', power: '45 CV', traction: '2WD/4WD/4WD Lock', capacity: '1 Plaza', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 520L', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce1a0d8b5ef424f36c49_CFORCE_520L.webp', specs: { engine: '495cc Monocilíndrico', power: '34 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T3b / L7e' } },
+    { name: 'CFORCE 520S', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943ce2809b40338817a4658_CFORCE_520S.webp', specs: { engine: '495cc Monocilíndrico', power: '34 CV', traction: '2WD/4WD/4WD Lock', capacity: '1 Plaza', homologation: 'T3b / L7e' } }
   ],
   ZFORCE: [
-    { name: 'Z10 TURBO', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/680a6d43d929130486136f62_Z10_Lava%20Orange_Left45_portada_11zon.webp' },
-    { name: 'Z10-4 TURBO', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/680a6d544f20721583e44f2c_Z10-4_Lava%20Orange_Left45_portada_11zon.webp' },
-    { name: 'ZFORCE 950 SPORT', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/67d882ec3b2d6e588fa0debf_ZFORCE_950%20SPORT_Tundra%20Grey_Left%2045.webp' },
-    { name: 'ZFORCE 950 SPORT-4', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/684c352f207aa54c1698bbd0_ZFORCE%20950%20SPORT-4_Magma%20Red_Left%2045_2_11zon.webp' }
+    { name: 'Z10 TURBO', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/680a6d43d929130486136f62_Z10_Lava%20Orange_Left45_portada_11zon.webp', specs: { engine: '998cc Tri-Cilíndrico Turbo', power: '143 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'Pendiente EU' } },
+    { name: 'Z10-4 TURBO', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/680a6d544f20721583e44f2c_Z10-4_Lava%20Orange_Left45_portada_11zon.webp', specs: { engine: '998cc Tri-Cilíndrico Turbo', power: '143 CV', traction: '2WD/4WD/4WD Lock', capacity: '4 Plazas', homologation: 'Pendiente EU' } },
+    { name: 'ZFORCE 950 SPORT', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/67d882ec3b2d6e588fa0debf_ZFORCE_950%20SPORT_Tundra%20Grey_Left%2045.webp', specs: { engine: '963cc V-Twin', power: '85 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T1b / L7e' } },
+    { name: 'ZFORCE 950 SPORT-4', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/684c352f207aa54c1698bbd0_ZFORCE%20950%20SPORT-4_Magma%20Red_Left%2045_2_11zon.webp', specs: { engine: '963cc V-Twin', power: '85 CV', traction: '2WD/4WD/4WD Lock', capacity: '4 Plazas', homologation: 'T1b (Tractor)' } }
   ],
   UFORCE: [
-    { name: 'U10 PRO XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf3ae626eb901b6e6c19_UFORCE_U10XL-PRO.webp' },
-    { name: 'U6 EV', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6942e3857a13d2179be85fd3_UFORCE_U6-EV.webp' },
-    { name: 'U10 PRO & Highland', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf23c5525165624900c7_UFORCE_U10-PRO.webp' },
-    { name: 'UFORCE 1000', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf6e1662e561ba65d8d1_UFORCE_1000.webp' },
-    { name: 'UFORCE 1000 XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf9a1ca899011de870fa_UFORCE_1000XL.webp' },
-    { name: 'UFORCE 800XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf4dbd42a969b82bf04c_UFORCE_800XL.webp' },
-    { name: 'UFORCE 600', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cfb2e626eb901b6eb18e_UFORCE_600.webp' }
+    { name: 'U10 PRO XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf3ae626eb901b6e6c19_UFORCE_U10XL-PRO.webp', specs: { engine: '998cc Tri-Cilíndrico', power: '82 CV', traction: '2WD/4WD/4WD Lock', capacity: '6 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'U6 EV', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6942e3857a13d2179be85fd3_UFORCE_U6-EV.webp', specs: { engine: 'Eléctrico Síncrono', power: '43 CV (Max)', traction: '2WD/4WD', capacity: '2 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'U10 PRO & Highland', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf23c5525165624900c7_UFORCE_U10-PRO.webp', specs: { engine: '998cc Tri-Cilíndrico', power: '82 CV', traction: '2WD/4WD/4WD Lock', capacity: '3 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'UFORCE 1000', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf6e1662e561ba65d8d1_UFORCE_1000.webp', specs: { engine: '963cc V-Twin', power: '71 CV', traction: '2WD/4WD/4WD Lock', capacity: '3 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'UFORCE 1000 XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf3ae626eb901b6e6c19_UFORCE_U10XL-PRO.webp', specs: { engine: '963cc V-Twin', power: '71 CV', traction: '2WD/4WD/4WD Lock', capacity: '6 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'UFORCE 800XL', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf23c5525165624900c7_UFORCE_U10-PRO.webp', specs: { engine: '800cc V-Twin', power: '62 CV', traction: '2WD/4WD/4WD Lock', capacity: '3 Plazas', homologation: 'T1b (Tractor)' } },
+    { name: 'UFORCE 600', image: 'https://cdn.prod.website-files.com/65809d660930f56d7ec25c7d/6943cf6e1662e561ba65d8d1_UFORCE_1000.webp', specs: { engine: '580cc Monocilíndrico', power: '41 CV', traction: '2WD/4WD/4WD Lock', capacity: '2 Plazas', homologation: 'T1b / T3b' } }
   ]
+};
+
+export type ModelSpec = {
+  name: string;
+  image: string;
+  specs: {
+    engine: string;
+    power: string;
+    traction: string;
+    capacity: string;
+    homologation: string;
+  }
 };
 
 export function Catalog() {
   const [activeCategory, setActiveCategory] = useState<keyof typeof catalogData>('CFORCE');
-  const [selectedModel, setSelectedModel] = useState<{name: string, image: string} | null>(null);
+  const [selectedModel, setSelectedModel] = useState<ModelSpec | null>(null);
 
   useEffect(() => {
     const handleCategoryChange = (e: Event) => {
@@ -93,6 +105,35 @@ export function Catalog() {
           ))}
         </motion.div>
 
+        {/* Category Description */}
+        <div className="min-h-[40px] mb-8">
+          <AnimatePresence mode="wait">
+             <motion.div
+                key={activeCategory}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="text-center"
+             >
+                {activeCategory === 'ZFORCE' && (
+                  <p className="text-gray-400 font-light max-w-2xl mx-auto text-xs md:text-sm">
+                    El rendimiento bruto de la familia ZFORCE diseñado para conquistar todos los terrenos con precisión milimétrica.
+                  </p>
+                )}
+                {activeCategory === 'UFORCE' && (
+                  <p className="text-gray-400 font-light max-w-2xl mx-auto text-xs md:text-sm">
+                    La serie UFORCE es tu compañera de trabajo ideal, combinando capacidad de carga y resistencia extrema.
+                  </p>
+                )}
+                {activeCategory === 'CFORCE' && (
+                  <p className="text-gray-400 font-light max-w-2xl mx-auto text-xs md:text-sm">
+                    La gama CFORCE domina con versatilidad superior, lista para explorar y superar cualquier obstáculo.
+                  </p>
+                )}
+             </motion.div>
+          </AnimatePresence>
+        </div>
+
         {/* Grid of Models */}
         <div className="min-h-[400px]">
           <AnimatePresence mode="wait">
@@ -111,7 +152,7 @@ export function Catalog() {
                   transition={{ duration: 0.5, delay: idx * 0.1 }}
                   key={model.name} 
                   onClick={() => setSelectedModel(model)}
-                  className="glass flex flex-col items-center justify-between p-6 rounded-xl hover:border-brand-orange/50 transition-colors group cursor-pointer"
+                  className="glass flex flex-col items-center justify-between p-6 rounded-xl hover:border-brand-orange/50 hover:scale-105 hover:shadow-2xl hover:shadow-brand-orange/20 transition-all duration-300 group cursor-pointer"
                 >
                   <div className="h-40 w-full flex items-center justify-center mb-6">
                     <img 
@@ -135,6 +176,10 @@ export function Catalog() {
               ))}
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        <div className="mt-12 text-center text-zinc-500 text-[9px] md:text-[10px] tracking-wide">
+           * Especificaciones preliminares sujetas a la homologación europea. Las versiones deslimitadas o pendientes pueden variar.
         </div>
       </div>
 
@@ -190,20 +235,23 @@ export function Catalog() {
                 <div className="grid grid-cols-2 gap-4 mb-8">
                    <div className="glass p-4 rounded-lg bg-white/5">
                      <Gauge className="text-brand-orange mb-2" size={20} />
-                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Motor Pura Sangre</div>
-                     <div className="text-white text-sm font-medium">Inyección BOSH</div>
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Motor / Potencia</div>
+                     <div className="text-white text-sm font-medium">{selectedModel.specs.engine} <br/> {selectedModel.specs.power}</div>
                    </div>
                    <div className="glass p-4 rounded-lg bg-white/5">
                      <ShieldCheck className="text-brand-orange mb-2" size={20} />
-                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Garantía OffRoad</div>
-                     <div className="text-white text-sm font-medium">Cobertura Oficial</div>
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Tracción</div>
+                     <div className="text-white text-sm font-medium">{selectedModel.specs.traction}</div>
                    </div>
-                   <div className="glass p-4 rounded-lg bg-white/5 col-span-2 flex items-center justify-between">
-                     <div>
-                       <Wrench className="text-brand-orange mb-2" size={20} />
-                       <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Recambios y Accesorios</div>
-                       <div className="text-white text-sm font-medium">Stock en Grupo Melli Automoción</div>
-                     </div>
+                   <div className="glass p-4 rounded-lg bg-white/5">
+                     <Wrench className="text-brand-orange mb-2" size={20} />
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Capacidad</div>
+                     <div className="text-white text-sm font-medium">{selectedModel.specs.capacity}</div>
+                   </div>
+                   <div className="glass p-4 rounded-lg bg-white/5">
+                     <FileText className="text-brand-orange mb-2" size={20} />
+                     <div className="text-xs text-brand-orange mb-1 font-bold tracking-widest uppercase">Homologación EU</div>
+                     <div className="text-white text-sm font-medium">{selectedModel.specs.homologation}</div>
                    </div>
                 </div>
 
@@ -214,7 +262,7 @@ export function Catalog() {
                         detail: { family: activeCategory, model: selectedModel.name } 
                       }));
                       setSelectedModel(null);
-                      document.getElementById('post-venta')?.scrollIntoView({ behavior: 'smooth' });
+                      document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' });
                     }}
                     className="flex-1 bg-brand-orange text-white py-4 px-6 text-sm font-bold tracking-widest uppercase hover:scale-105 transition-transform text-center"
                   >

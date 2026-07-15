@@ -1,8 +1,6 @@
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { Models } from './components/Models';
 import { Catalog } from './components/Catalog';
-import { Testimonials } from './components/Testimonials';
 import { Contact } from './components/Contact';
 import { motion, useScroll, useSpring, AnimatePresence } from 'motion/react';
 import { useState, useEffect } from 'react';
@@ -39,9 +37,7 @@ export default function App() {
       <Navbar />
       <main>
         <Hero />
-        <Models />
         <Catalog />
-        <Testimonials />
         <Contact />
       </main>
       
